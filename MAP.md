@@ -1,374 +1,238 @@
+🧭 MAP.md — Python Module 07 · DataDeck 🃏
 
-# 🧭 MAP.md — Python Module 07 · DataDeck 🃏
-**OOP · Herencia · Polimorfismo · Diseño extensible · flake8**
+OOP · ABC · Polimorfismo · Herencia múltiple · Patrones · flake8
 
-Este documento es mi mapa de aprendizaje y diseño.
-Explica qué hace cada pieza, cómo encaja y por qué está así.
+Este documento describe la arquitectura del módulo DataDeck.
+Aunque utiliza la metáfora de un juego de cartas, su propósito real es demostrar diseño orientado a contratos, extensibilidad y bajo acoplamiento.
 
----
+🌱 Idea central
 
-## 🌱 Idea central del módulo
+El sistema evoluciona desde:
 
-Pasar de:
-
-❌ “tengo varias clases y hago if para distinguirlas”
+❌ Diferenciar comportamientos mediante if / isinstance
 a
-✅ “todas son Card y el sistema funciona sin preguntar el tipo”
-
-**Regla de oro (defensa):**
-- El motor (Deck / main) solo conoce el contrato `Card`.
-- Las subclases deciden el comportamiento.
-
----
-
-## 🧩 Arquitectura del sistema (visión mental)
-
-           ┌───────────────┐
-           │     Deck       │
-           │  (gestiona)    │
-           └───────┬───────┘
-                   │ contiene
-                   ▼
-      ┌──────────────────────────┐
-      │          Card            │  (base / contrato)
-      │ get_card_info()          │
-      │ play(game_state)         │
-      │ is_playable(game_state)  │
-      └───────┬───────────┬──────┘
-              │           │
-              ▼           ▼
-     ┌─────────────┐   ┌─────────────┐   ┌──────────────┐
-     │ CreatureCard │   │  SpellCard  │   │ ArtifactCard  │
-     │ ataque/vida  │   │ efecto tipo │   │ durabilidad   │
-     │ combate       │  │ resolve()   │   │ habilidad      │
-     └─────────────┘   └─────────────┘   └──────────────┘
-
-
-**Deck = composición** (TIENE cartas)  
-**Creature/Spell/Artifact = herencia** (SON una carta)
-
----
-
-## 🟢 ex0 — Card Foundation (contrato + primera subclase)
-
-### 🎯 Objetivo del ejercicio
-Crear un contrato base (`Card`) y demostrar una subclase real (`CreatureCard`)
-con comportamiento propio.
-
-### 🧠 Qué piezas hay y qué hace cada una
-
-#### `Card.py` (clase base: contrato)
-- `__init__(name, cost, rarity)`
-  → guarda atributos comunes a todas las cartas.
-- `get_card_info()`
-  → devuelve un dict consistente con info base (y la subclase puede extenderlo).
-- `is_playable(game_state)` (o `can_play`)
-  → decide si se puede jugar según `available_mana`.
-- `play(game_state)`
-  → método del contrato: cada subclase lo redefine.
-
-✅ **Idea clave:** `Card` define **qué** se puede hacer con una carta, no **cómo**.
-
-#### `CreatureCard.py` (subclase concreta)
-- `__init__(attack, health, ...)`
-  → añade stats propios de criatura.
-- `get_card_info()`
-  → devuelve la info base + `attack` y `health`.
-- `play(game_state)`
-  → gasta mana y devuelve un resultado tipo “summoned”.
-- `attack_target(target_name)` (si existe)
-  → demuestra comportamiento exclusivo de criatura.
-
-✅ **Idea clave:** la subclase añade valor **SIN romper el contrato**.
-
-#### `ex0/main.py` (script demo)
-- Crea una criatura
-- Imprime `get_card_info()`
-- Prueba `is_playable()` con mana suficiente y no suficiente
-- Ejecuta `play()`
-- Simula un ataque
-
-✅ `main()` solo orquesta y muestra la demo.
-
----
-
-## 🟡 ex1 — Deck Builder (polimorfismo real)
-
-### 🎯 Objetivo del ejercicio
-El mazo (`Deck`) debe trabajar con cartas distintas **sin condicionales por tipo**:
-- `CreatureCard`
-- `SpellCard`
-- `ArtifactCard`
-
-### 🧠 Qué hace cada fichero
-
-#### `Deck.py` (gestor del sistema)
-- `__init__()`
-  → crea `self._cards` como lista interna.
-- `add_card(card: Card)`
-  → mete cualquier objeto que cumpla el contrato `Card`.
-- `remove_card(card_name)` (tu preferencia: `delete` si lo aplicas en el módulo)
-  → elimina por nombre (gestión del mazo).
-- `shuffle()`
-  → mezcla el orden.
-- `draw_card()`
-  → saca la primera carta o `None` si está vacío.
-- `get_deck_stats()`
-  → analítica simple: total, tipos, coste medio.
-
-✅ **Clave mental:** `Deck` no “juega cartas”, solo las gestiona.
+✅ Delegar comportamiento a través de un contrato común (Card)
 
-#### `SpellCard.py` (carta concreta: hechizo)
-- `__init__(spell_type, ...)`
-  → define “damage”, “heal”, etc.
-- `play(game_state)`
-  → devuelve resultado y usa `resolve_effect()`.
-- `resolve_effect(targets)`
-  → construye la salida según tipo/targets.
+Principio rector
 
-✅ **Clave mental:** `Deck` no sabe nada del efecto; la carta sí.
+El motor depende de interfaces, no de implementaciones.
 
-#### `ArtifactCard.py` (carta concreta: efecto permanente)
-- `__init__(durability, artifact_effect, ...)`
-  → define durabilidad y efecto.
-- `play(game_state)`
-  → devuelve el efecto (permanente).
-- `activate_ability()`
-  → consume durabilidad y devuelve estado.
+Las subclases encapsulan su propio comportamiento.
 
-✅ **Clave mental:** es una carta “de estado”, por eso tiene durabilidad.
+Añadir nuevas cartas no requiere modificar el motor.
 
-#### `ex1/main.py` (demo polimórfica)
-Flujo:
-1. `deck = Deck()`
-2. crea 3 cartas (distintos tipos)
-3. `deck.add_card(...)` para todas
-4. imprime `deck.get_deck_stats()`
-5. loop:
-   - `card = deck.draw_card()`
-   - `info = card.get_card_info()`
-   - `result = card.play(game_state)`
+Esto cumple el principio Open/Closed.
 
-✅ Aquí está el polimorfismo real:
-- misma llamada `card.play(...)`
-- distinto resultado según clase
+🧩 Arquitectura del sistema
+Relación principal
 
----
+Deck contiene cartas → composición
 
-## 🟠 ex2 — Ability Layer (múltiples interfaces + herencia múltiple)
+CreatureCard, SpellCard, ArtifactCard extienden Card → herencia
 
-> **Tema del ejercicio:** “Ability Layer: Multiple Interface Design”  
-> Construimos un sistema flexible de habilidades usando **interfaces abstractas**
-> combinables mediante **herencia múltiple**.
+🎯 Diagrama UML simplificado
+                +----------------+
+                |     Deck       |
+                +----------------+
+                | - _cards:list  |
+                +----------------+
+                | +add_card()    |
+                | +draw_card()   |
+                | +shuffle()     |
+                +--------+-------+
+                         |
+                         | contains
+                         v
+                +----------------------+
+                | <<abstract>> Card    |
+                +----------------------+
+                | - name               |
+                | - cost               |
+                | - rarity             |
+                +----------------------+
+                | +play()              |
+                | +is_playable()       |
+                | +get_card_info()     |
+                +----------+-----------+
+                           ^
+            ---------------|-------------------
+            |              |                  |
++----------------+  +----------------+  +----------------+
+| CreatureCard   |  | SpellCard      |  | ArtifactCard   |
++----------------+  +----------------+  +----------------+
+| - attack       |  | - spell_type   |  | - durability   |
+| - health       |  |                |  |                |
++----------------+  +----------------+  +----------------+
 
-### 🎯 Objetivo del ejercicio
-Diseñar **múltiples interfaces abstractas** que puedan combinarse para crear cartas
-“élite” con **varias capacidades simultáneas** (combate + magia).
+🟢 ex0 — Card Foundation
+Objetivo
 
-Pasamos de:
-- “una carta tiene un solo rol”
-a
-- “una carta puede implementar varios roles sin mezclar responsabilidades”
+Definir el contrato base (Card) mediante una Abstract Base Class.
 
-### 🧠 Qué se aprende aquí (conceptos)
-1) **Interfaces (ABCs) como capas de capacidad**
-- `Combatable` define comportamiento de combate.
-- `Magical` define comportamiento mágico.
-- No son cartas “completas”: son **contratos de habilidad**.
+Decisiones clave
 
-2) **Separación de concerns**
-- Combate y magia están separados: cada uno tiene su conjunto de métodos.
-- Esto evita una clase monolítica tipo `MegaCard` con todo mezclado.
+play() es abstracto para forzar implementación.
 
-3) **Herencia múltiple con contrato claro**
-- `EliteCard` hereda de:
-  - `Card` (identidad de carta + coste/rareza + info)
-  - `Combatable` (habilidad de ataque/defensa)
-  - `Magical` (habilidad de lanzar hechizos/canalizar mana)
-- Implementa **todos** los métodos abstractos.
+Card define comportamiento común, no implementación.
 
-✅ Resultado: una carta con varias habilidades sin ifs y sin acoplar Deck a tipos.
+Se previenen errores en tiempo de instanciación.
 
----
+🟡 ex1 — Deck Builder
+Objetivo
 
-### 📦 Estructura de ex2
-```text
-ex2/
-├── __init__.py
-├── Combatable.py
-├── Magical.py
-├── EliteCard.py
-└── main.py
-✅ Import importante del subject:
+Gestionar múltiples tipos de carta sin condicionales por tipo.
 
-EliteCard.py debe importar Card desde ex0:
+Diseño
 
-from ex0.Card import Card
+Deck almacena list[Card].
 
-🧱 Contratos exactos (lo que exige el subject)
-Combatable (interfaz abstracta)
-Debe definir:
+El método play() se ejecuta de forma polimórfica.
 
-attack(self, target) -> dict
+El motor no conoce la clase concreta.
 
-defend(self, incoming_damage: int) -> dict
+Polimorfismo real:
 
-get_combat_stats(self) -> dict
+card = deck.draw_card()
+card.play(game_state)
 
-Interpretación mental:
+🟠 ex2 — Ability Layer (Herencia múltiple controlada)
+Objetivo
 
-attack() genera un resultado de ataque (quién, a quién, cuánto daño, tipo).
+Separar capacidades en interfaces independientes.
 
-defend() aplica mitigación y reporta daño bloqueado/recibido.
+Interfaces:
 
-get_combat_stats() expone stats de combate (damage base, armor, etc.).
+Combatable
 
-✅ Combatable no decide cómo se juega la carta en el deck.
-Solo define qué sabe hacer en combate.
+Magical
 
-Magical (interfaz abstracta)
-Debe definir:
+Representan capacidades, no identidad.
 
-cast_spell(self, spell_name: str, targets: list) -> dict
+EliteCard
+class EliteCard(Card, Combatable, Magical)
 
-channel_mana(self, amount: int) -> dict
 
-get_magic_stats(self) -> dict
+Permite componer comportamiento sin crear clases monolíticas.
 
-Interpretación mental:
+Polimorfismo por capacidad
 
-cast_spell() devuelve resultado (caster, spell, targets, mana_used).
+El sistema puede depender de:
 
-channel_mana() aumenta el mana interno o el estado mágico.
+Card
 
-get_magic_stats() expone stats mágicas (mana actual, coste base, etc.).
+Combatable
 
-✅ Magical define qué sabe hacer en magia sin mezclar combate.
+Magical
 
-EliteCard (herencia múltiple: Card + Combatable + Magical)
-Debe implementar:
+Sin conocer la clase concreta.
 
-play(self, game_state: dict) -> dict
+🟣 ex3 — Patrones de diseño
+Factory Pattern
 
-attack(self, target) -> dict
+Centraliza la creación de cartas.
+Reduce acoplamiento y mejora escalabilidad.
 
-cast_spell(self, spell_name: str, targets: list) -> dict
-(y también los otros abstractos: defend, channel_mana,
-get_combat_stats, get_magic_stats, etc.)
+Strategy Pattern
 
-Interpretación mental:
+Permite modificar el comportamiento del motor mediante inyección de estrategia.
 
-EliteCard es una carta “poderosa” porque acumula capacidades:
+El motor no cambia.
+Solo cambia el objeto estrategia.
 
-puede jugarse como carta (coste/rareza)
+🔴 ex4 — Extensibilidad
 
-puede atacar/defender
+Se añade un nuevo contrato:
 
-puede lanzar magia y gestionar mana
+Rankable
 
-✅ Esto demuestra por qué las interfaces son útiles: combinamos piezas
-de comportamiento de forma modular.
+Permite introducir un sistema de torneos sin modificar módulos anteriores.
 
-🧠 ¿Dónde está el polimorfismo en ex2?
-En dos niveles:
+Demuestra arquitectura abierta y desacoplada.
 
-1) Polimorfismo como Card
-EliteCard se puede tratar como Card:
+🧠 Design Trade-offs
+1️⃣ ABC vs duck typing
 
-get_card_info()
+Decisión: usar Abstract Base Classes.
 
-is_playable(game_state)
+Ventaja:
 
-play(game_state)
+Contrato explícito
 
-El motor solo necesita el contrato Card.
+Errores detectados antes
 
-2) Polimorfismo por capacidad (interfaces)
-Otros sistemas podrían trabajar por interfaz:
+Mayor claridad estructural
 
-Un “combat engine” puede operar con cualquier Combatable
+Trade-off:
 
-Un “magic engine” puede operar con cualquier Magical
+Mayor rigidez inicial
 
-✅ Esto habilita diseño flexible: no dependes de la clase concreta,
-dependes del contrato.
+Más código declarativo
 
-🧪 ex2/main.py — Demo requerida (cómo se demuestra)
-El output esperado del subject muestra tres cosas:
+2️⃣ Herencia múltiple vs composición pura
 
-A) “Introspección” de capacidades
-Listar qué métodos aporta cada capa:
+Decisión: usar herencia múltiple para capacidades.
 
-Card: play, get_card_info, is_playable
+Ventaja:
 
-Combatable: attack, defend, get_combat_stats
+Modela habilidades como contratos formales
 
-Magical: cast_spell, channel_mana, get_magic_stats
+Permite polimorfismo por interfaz
 
-✅ Mensaje defendible: “Esta carta cumple varios contratos”.
+Trade-off:
 
-B) Playing la EliteCard
-Se demuestra que es jugable como carta:
+Riesgo de complejidad si se abusa
 
-coste/mana → play(game_state) funciona
+Necesidad de mantener jerarquía clara
 
-C) Fases: combate y magia
-Combat phase:
+3️⃣ Patrones vs simplicidad
 
-attack("Enemy")
+Decisión: aplicar Factory y Strategy.
 
-defend(incoming_damage)
+Ventaja:
 
-Magic phase:
+Bajo acoplamiento
 
-cast_spell("Fireball", ["Enemy1", "Enemy2"])
+Configuración flexible
 
-channel_mana(3)
+Escalabilidad
 
-✅ Cierra con un mensaje tipo:
-“Multiple interface implementation successful!”
+Trade-off:
 
-✅ Checklist rápido (antes de seguir)
- Cada directorio tiene __init__.py
+Mayor abstracción
 
- EliteCard hereda de Card, Combatable, Magical
+Más capas para entender al inicio
 
- EliteCard implementa todos los abstract methods
+🧠 Conceptos practicados
 
- play() usa game_state y respeta available_mana
+Programación contra interfaces
 
- Las funciones devuelven dict con claves claras (como output esperado)
+Separación de responsabilidades
 
- No hay if isinstance(...) para decidir comportamiento
+Bajo acoplamiento
 
- flake8 limpio
+Principios SOLID
 
- python3 -m ex2.main funciona desde la raíz
+Polimorfismo real
 
-🗣️ Mini defensa (60s)
-“En ex2 introduzco una capa de habilidades mediante interfaces abstractas.
-Defino Combatable y Magical como contratos separados para evitar mezclar
-responsabilidades. Luego creo EliteCard que hereda de Card y de ambas
-interfaces. Implemento todos los métodos, demostrando herencia múltiple y
-polimorfismo por capacidad: un sistema puede tratarla como Card, o como
-Combatable, o como Magical. Esto hace el diseño extensible: puedo crear
-nuevas cartas combinando interfaces sin tocar el motor.”
+Extensibilidad sin modificación
 
-❓Pregunta del subject (respuesta defendible)
-¿Cómo habilitan múltiples interfaces un diseño flexible de cartas?
+🧪 Estándares de calidad
 
-Permiten modelar habilidades como “capas” combinables.
+Python 3.10+
 
-Puedes crear nuevas cartas reusando contratos (Combatable, Magical)
-sin duplicar lógica ni tocar otras clases.
+Tipado explícito
 
-Ventajas de separar combate y magia
+flake8 limpio
 
-Menos acoplamiento: cada módulo se centra en un tipo de habilidad.
+Sin condicionales por tipo
 
-Más reutilización: puedes crear una carta solo mágica o solo de combate.
+Ejecución modular:
 
-Más mantenibilidad: cambios en magia no rompen combate (y viceversa).
+python3 -m exX.main
 
-Más extensibilidad: añadir Healable, Stealth, Utility es fácil.
+📌 Resumen ejecutivo
+
+DataDeck demuestra cómo diseñar un sistema extensible basado en contratos formales.
+El motor depende de interfaces, no de implementaciones concretas.
+La arquitectura permite añadir nuevas capacidades y comportamientos sin modificar el núcleo del sistema.
 

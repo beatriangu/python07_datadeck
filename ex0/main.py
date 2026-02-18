@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from .CreatureCard import CreatureCard
 
 
 def main() -> None:
-    print("=== DataDeck Card Foundation ===\n")
+    """Demonstration of the Card abstract base class design."""
 
-    print("Testing Abstract Base Class Design:\n")
+    print("\n=== DataDeck · Card Foundation (ex0) ===\n")
 
     creature = CreatureCard(
         name="Fire Dragon",
@@ -14,21 +16,35 @@ def main() -> None:
         health=5,
     )
 
-    print("CreatureCard Info:")
-    print(creature.get_card_info(), "\n")
+    # Display card information
+    print("CreatureCard info:")
+    print(creature.get_card_info())
+    print()
 
-    print("Playing Fire Dragon with 6 mana available:")
-    print("Playable:", creature.is_playable(6))
-    print("Play result:", creature.play({}), "\n")
+    # Test playable state
+    available_mana = 6
+    print(f"Playing with {available_mana} mana available:")
+    print("Playable:", creature.is_playable(available_mana))
+    print("Play result:", creature.play({}))
+    print()
 
-    print("Fire Dragon attacks Goblin Warrior:")
-    print("Attack result:", creature.attack_target("Goblin Warrior"), "\n")
+    # Test combat
+    print("Combat demonstration:")
+    print(
+        "Attack result:",
+        creature.attack_target("Goblin Warrior"),
+    )
+    print()
 
-    print("Testing insufficient mana (3 available):")
-    print("Playable:", creature.is_playable(3), "\n")
+    # Test insufficient mana
+    available_mana = 3
+    print(f"Testing insufficient mana ({available_mana} available):")
+    print("Playable:", creature.is_playable(available_mana))
+    print()
 
-    print("Abstract pattern successfully demonstrated!")
+    print("Abstract Base Class pattern successfully demonstrated.\n")
 
 
 if __name__ == "__main__":
     main()
+

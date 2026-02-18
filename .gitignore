@@ -33,4 +33,11 @@ dist/
 .ruff_cache/
 .coverage
 
+# ==================================================
+# Personal / Private files
+# ==================================================
+OWNMAP.md
 
+# Local testing tools
+tools/
+*.tar.gz
