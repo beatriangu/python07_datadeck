@@ -108,7 +108,7 @@ Implements play()
 
 Extends behavior without breaking the contract
 
-What It Demonstrates
+Demonstrates
 
 Contracts prevent incomplete implementations
 
@@ -237,11 +237,11 @@ Goal
 
 Introduce ranking capability without modifying the core system.
 
-Rankable defines ranking behavior.
+Rankable defines ranking behavior
 
-TournamentCard implements it.
+TournamentCard implements it
 
-TournamentPlatform orchestrates tournament flow.
+TournamentPlatform orchestrates tournament flow
 
 Demonstrates
 
@@ -262,7 +262,6 @@ Everywhere this appears:
 card.play(game_state)
 
 The engine never checks type.
-
 Each subclass defines its own behavior.
 
 Why avoid if card.type == ...?
@@ -289,7 +288,7 @@ That is extensibility by design.
 
 🧪 Linting
 
-Run from repository root:
+Run from the repository root:
 
 flake8
 

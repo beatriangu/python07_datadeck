@@ -36,6 +36,7 @@ card.play(game_state)
 El comportamiento:
 
 ❌ No se decide por tipo
+
 ✅ Se delega al propio objeto mediante contrato
 
 Esto elimina:
