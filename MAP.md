@@ -74,18 +74,18 @@ CreatureCard / SpellCard / ArtifactCard → herencia
 EliteCard → herencia múltiple controlada
 
 GameEngine → inyección de dependencias (Factory + Strategy)
-
-📐 UML Simplificado
+"""
                 +----------------+
                 |     Deck       |
                 +----------------+
-                | - _cards:list  |
+                | - _cards: list |
                 +----------------+
-                | +add_card()    |
-                | +draw_card()   |
-                | +shuffle()     |
+                | + add_card()   |
+                | + draw_card()  |
+                | + shuffle()    |
                 +--------+-------+
                          |
+                         | contains
                          v
                 +----------------------+
                 | <<abstract>> Card    |
@@ -94,14 +94,20 @@ GameEngine → inyección de dependencias (Factory + Strategy)
                 | - cost               |
                 | - rarity             |
                 +----------------------+
-                | +play()              |
-                | +is_playable()       |
-                | +get_card_info()     |
+                | + play()             |
+                | + is_playable()      |
+                | + get_card_info()    |
                 +----------+-----------+
                            ^
             ---------------|-------------------
             |              |                  |
-      CreatureCard     SpellCard         ArtifactCard
+     +-------------+  +-------------+  +-------------+
+     | CreatureCard|  | SpellCard   |  | ArtifactCard|
+     +-------------+  +-------------+  +-------------+
+     | - attack    |  | - spell_type|  | - durability|
+     | - health    |  |             |  |             |
+     +-------------+  +-------------+  +-------------+
+     """
 🟢 ex0 — Card Foundation
 Objetivo
 
