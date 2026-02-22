@@ -1,58 +1,76 @@
 🃏 DataDeck — Python Module 07
+Advanced Object-Oriented Architecture in Python
 
 OOP · Abstract Base Classes · Multiple Inheritance · Polymorphism · Design Patterns · flake8
 
-DataDeck is a modular, Trading Card Game–inspired system built to practice clean, extensible, and defendable object-oriented design in Python.
+DataDeck is a modular, Trading Card Game–inspired architecture designed to practice clean, extensible, and defendable object-oriented design in Python.
 
-Core idea:
-Same interface, different behavior — without if/elif branching and without isinstance() checks.
+This project is not about building a game.
+It is about designing an architecture that can evolve without breaking.
 
-This project is not about building a full game.
-It is about designing an architecture that can grow without breaking.
+🎯 Core Philosophy
 
-🎯 Architectural Goal
+Same interface. Different behavior. No conditionals. No isinstance().
+
+The system is built around a single principle:
+
+The engine depends on abstractions, not implementations.
+
+Behavior is delegated to objects.
+
+Extensibility does not require modifying existing code.
+
+🧠 Architectural Goals
 
 Design a system where:
 
-The engine depends on interfaces, not implementations
+The engine depends on interfaces, not concrete classes
 
-New card types can be added without modifying existing code
+New card types can be introduced without engine modification
 
-Behavior is delegated to objects, not centralized in conditionals
+Behavior is encapsulated within objects
 
-Code remains lint-clean and explainable
+The architecture respects SOLID principles
 
-This module demonstrates:
+Code remains flake8-clean and evaluation-ready
 
-Open/Closed Principle
+📚 Concepts Demonstrated
 
-Low coupling
+This module implements:
 
-High cohesion
+✅ Open/Closed Principle
 
-Interface-based design
+✅ Low coupling & high cohesion
 
-Runtime polymorphism
+✅ Interface-driven design
 
-🧠 Key Learning Outcomes
+✅ Runtime polymorphism
 
-By completing this module, I can:
+✅ Strategy Pattern
+
+✅ Abstract Factory Pattern
+
+✅ Controlled multiple inheritance
+
+🧩 Learning Outcomes
+
+After completing this module, I can:
 
 Define explicit contracts using Abstract Base Classes (ABC)
 
 Enforce behavior consistency across subclasses
 
-Demonstrate real polymorphism (card.play(...))
+Demonstrate true runtime polymorphism (card.play(...))
 
-Combine capabilities using multiple inheritance (interfaces)
+Combine capabilities using multiple inheritance
 
-Apply Strategy and Factory patterns properly
+Apply Strategy and Factory patterns correctly
 
-Organize a Python project as a package
+Structure a Python project as a modular package
 
-Keep code flake8 clean and evaluation-ready
+Deliver flake8-compliant, production-ready code
 
-✅ Project Constraints
+⚙️ Project Constraints
 
 Python 3.10+
 
@@ -60,9 +78,9 @@ Standard library only
 
 Fully flake8 compliant
 
-Modular execution from repository root
+Executable modular structure
 
-Run pattern:
+Run exercises from the repository root:
 
 python3 -m ex0.main
 python3 -m ex1.main
@@ -79,7 +97,7 @@ python07_datadeck/
 ├── ex3/  # Strategy + Factory
 └── ex4/  # Ranking & orchestration
 
-Each exercise is self-contained and executable.
+Each exercise is isolated, modular, and executable.
 
 🧩 Exercise Breakdown
 🟢 ex0 — Card Foundation
@@ -90,9 +108,9 @@ Goal
 
 Create a universal contract for all card types.
 
-Core Design
+Design
 
-Card (ABC):
+Card (ABC)
 
 play(game_state) → abstract
 
@@ -100,9 +118,9 @@ get_card_info() → shared implementation
 
 is_playable() → shared validation logic
 
-CreatureCard:
+CreatureCard
 
-Adds attack and health
+Adds attack & health
 
 Implements play()
 
@@ -127,10 +145,6 @@ Goal
 
 Store multiple card types in the same collection and treat them uniformly.
 
-Design
-
-Deck stores Card references, not concrete types.
-
 card = deck.draw_card()
 card.play(game_state)
 
@@ -148,7 +162,7 @@ Demonstrates
 
 Runtime polymorphism
 
-Removal of conditional branching
+Elimination of conditional branching
 
 Distributed responsibility
 
@@ -157,7 +171,7 @@ Run:
 python3 -m ex1.main
 🔵 ex2 — Ability Layer
 
-Multiple Interfaces, Controlled Multiple Inheritance
+Multiple Interfaces & Capability Composition
 
 Problem
 
@@ -185,18 +199,18 @@ These represent capabilities, not identity.
 
 Demonstrates
 
-Multiple inheritance used intentionally
+Intentional multiple inheritance
 
-Interface-driven design
+Interface-driven composition
 
-Modular capability composition
+Modular capability design
 
 Run:
 
 python3 -m ex2.main
 🟣 ex3 — Strategy + Factory
 
-Behavior Configuration + Object Creation Abstraction
+Behavior Configuration & Object Creation Abstraction
 
 Strategy Pattern
 
@@ -212,13 +226,7 @@ Encapsulates card creation logic.
 
 The engine depends on CardFactory, not concrete classes.
 
-Why This Matters
-
-Factory controls what exists
-
-Strategy controls how it behaves
-
-Separation of:
+Separation of Responsibilities
 
 Construction
 
@@ -254,14 +262,14 @@ Orchestration separated from entity logic
 Run:
 
 python3 -m ex4.main
-🧠 Defense-Ready Explanations
+🛡 Defense-Ready Explanations
 Where is polymorphism?
 
-Everywhere this appears:
+Every time you see:
 
 card.play(game_state)
 
-The engine never checks type.
+The engine never checks the type.
 Each subclass defines its own behavior.
 
 Why avoid if card.type == ...?
@@ -270,7 +278,7 @@ Because:
 
 Behavior belongs inside the object
 
-Type-checking breaks Open/Closed
+Type-checking violates Open/Closed
 
 It centralizes logic and increases coupling
 
@@ -282,13 +290,13 @@ Implement play()
 
 Optionally implement additional interfaces
 
-No engine modification required
+No engine modification required.
 
 That is extensibility by design.
 
 🧪 Linting
 
-Run from the repository root:
+From repository root:
 
 flake8
 
@@ -304,11 +312,13 @@ Dependency inversion
 
 Controlled multiple inheritance
 
-Pattern application with purpose
+Pattern application with intent
 
 Open/Closed Principle in practice
 
-Clean, explainable, scalable OOP design
+Clean, scalable OOP design
+
+🧭 Final Note
 
 This is not a card game.
 
@@ -317,3 +327,4 @@ It is an architecture exercise.
 👤 Author
 
 Bea
+Python & Backend Developer
