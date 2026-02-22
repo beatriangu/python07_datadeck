@@ -36,7 +36,6 @@ card.play(game_state)
 El comportamiento:
 
 ❌ No se decide por tipo
-
 ✅ Se delega al propio objeto mediante contrato
 
 Esto elimina:
@@ -54,7 +53,6 @@ Acoplamiento rígido
 El motor depende de interfaces, no de implementaciones.
 
 Las subclases encapsulan su comportamiento.
-
 El núcleo del sistema permanece estable.
 
 Nuevas cartas no requieren modificar el motor.
@@ -74,7 +72,8 @@ CreatureCard / SpellCard / ArtifactCard → herencia
 EliteCard → herencia múltiple controlada
 
 GameEngine → inyección de dependencias (Factory + Strategy)
-"""
+
+🏗 Diagrama estructural
                 +----------------+
                 |     Deck       |
                 +----------------+
@@ -107,9 +106,8 @@ GameEngine → inyección de dependencias (Factory + Strategy)
      | - attack    |  | - spell_type|  | - durability|
      | - health    |  |             |  |             |
      +-------------+  +-------------+  +-------------+
-     """
 🟢 ex0 — Card Foundation
-Objetivo
+🎯 Objetivo
 
 Definir un contrato formal usando abc.ABC.
 
@@ -126,7 +124,7 @@ Resultado
 Arquitectura basada en contrato formal, no en convención implícita.
 
 🟡 ex1 — Deck Builder
-Objetivo
+🎯 Objetivo
 
 Gestionar múltiples tipos de carta sin condicionales por tipo.
 
@@ -148,7 +146,7 @@ Solo conoce el contrato Card.
 ✔ Responsabilidad distribuida
 
 🟠 ex2 — Ability Layer
-Problema
+🧩 Problema
 
 Algunas cartas pueden:
 
@@ -160,7 +158,7 @@ Lanzar hechizos
 
 Canalizar magia
 
-Solución
+💡 Solución
 
 Separar capacidades en interfaces independientes:
 
@@ -168,7 +166,7 @@ Combatable
 
 Magical
 
-class EliteCard(Card, Combatable, Magical)
+class EliteCard(Card, Combatable, Magical):
 
 Estas interfaces representan habilidades, no identidad.
 
@@ -216,6 +214,7 @@ Cambiar estrategia ≠ modificar motor.
 🔥 Por qué Factory + Strategy es potente
 
 Factory controla qué existe
+
 Strategy controla cómo se usa
 
 Separación clara entre:
@@ -246,7 +245,7 @@ Métricas adicionales
 
 Sin modificar las capas anteriores.
 
-Demostración real del principio Open/Closed.
+💡 Demostración real del principio Open/Closed.
 
 🧠 Design Trade-offs
 1️⃣ ABC vs Duck Typing
