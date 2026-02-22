@@ -74,7 +74,6 @@ EliteCard → herencia múltiple controlada
 GameEngine → inyección de dependencias (Factory + Strategy)
 
 
-```md
 ## 🏗 Diagrama estructural
 
 ```text
