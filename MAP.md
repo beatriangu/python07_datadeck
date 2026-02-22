@@ -100,10 +100,10 @@ GitHub en bloques de código:
 ---
 
 
-```m
+```md
 ## 🏗 Diagrama estructural
 
-```
+```text
 +----------------+
 |     Deck       |
 +----------------+
